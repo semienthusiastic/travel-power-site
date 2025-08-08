@@ -1,0 +1,24 @@
+
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="UTF-8"><title>Will My Appliance Work Abroad?</title>
+<link rel="stylesheet" href="style.css">
+<script src="script.js" defer></script>
+</head><body>
+<header><h1>Will My Appliance Work Abroad?</h1></header>
+<main>
+  <label for="fromCountry">Your Home Region:</label>
+  <select id="fromCountry">
+    <option value="UK">UK / Ireland (230V)</option>
+    <option value="EU">EU (230V)</option>
+    <option value="US">US / Canada (120V)</option>
+  </select>
+
+  <label for="toCountry">Destination Country:</label>
+  <select id="toCountry"></select>
+
+  <label style="margin-top:.5rem;"><input type="checkbox" id="dualVoltage" checked> My device is dual-voltage (e.g., 100–240V)</label>
+
+  <button onclick="checkAppliance()">Check</button>
+  <div id="applianceResult"></div>
+</main>
+</body></html>
