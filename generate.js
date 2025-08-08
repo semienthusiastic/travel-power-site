@@ -1,4 +1,4 @@
-// generate.js — build country pages with SEO, OG/Twitter, JSON-LD, affiliate links
+// generate.js — tolerant of plugTypes vs plug_types; frequency number/string
 const fs = require('fs');
 const path = require('path');
 const data = require('./data.json');
@@ -6,8 +6,20 @@ const data = require('./data.json');
 const siteUrl = process.env.SITE_URL || 'https://example.com';
 const today = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
 const countriesDir = path.join(__dirname, 'countries');
-
 if (!fs.existsSync(countriesDir)) fs.mkdirSync(countriesDir);
+
+function normPlugs(entry) {
+  const plugs = entry.plug_types || entry.plugTypes || entry.plugs;
+  if (Array.isArray(plugs)) return plugs;
+  if (typeof plugs === 'string') return plugs.split(/[\s,]+/).filter(Boolean);
+  return [];
+}
+function normFreq(entry) {
+  const f = entry.frequency;
+  if (typeof f === 'number') return `${f}Hz`;
+  if (typeof f === 'string') return /hz$/i.test(f) ? f : `${f}Hz`;
+  return '';
+}
 
 function htmlPage(title, body, desc, urlPath) {
   const canonical = `${siteUrl}${urlPath}`;
@@ -22,13 +34,9 @@ function htmlPage(title, body, desc, urlPath) {
     "publisher": {
       "@type": "Organization",
       "name": "TravelPlugGuide",
-      "logo": {
-        "@type": "ImageObject",
-        "url": `${siteUrl}/assets/logo-128.png`
-      }
+      "logo": { "@type": "ImageObject", "url": `${siteUrl}/assets/logo-128.png` }
     }
   };
-
   const meta = `
 <link rel="canonical" href="${canonical}">
 <meta name="description" content="${desc}">
@@ -43,7 +51,6 @@ function htmlPage(title, body, desc, urlPath) {
 <meta name="twitter:image" content="${siteUrl}/assets/logo-128.png">
 <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
 `;
-
   return `<!DOCTYPE html><html lang="en"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${title} · TravelPlugGuide</title>
@@ -70,17 +77,22 @@ ${body}
 }
 
 data.forEach(entry => {
-  const c = entry.country;
-  const slug = c.toLowerCase().replace(/\s+/g, '-');
-  const desc = `In ${c}, the standard voltage is ${entry.voltage}V at ${entry.frequency}, and plugs are type ${entry.plug_types.join(', ')}. Learn if you need an adapter or converter before you travel.`;
+  const country = entry.country;
+  const slug = country.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g,'');
+  const plugs = normPlugs(entry);
+  const freq = normFreq(entry);
+  const desc = `In ${country}, the standard voltage is ${entry.voltage}V at ${freq}, and plugs are type ${plugs.join(', ')}. Learn if you need an adapter or converter before you travel.`;
+
   const affiliateBlock = `
 <div class="affiliate-box">
-<strong>Need a travel adapter for ${c}?</strong><br>
-<a href="https://www.amazon.com/s?k=travel+adapter+${encodeURIComponent(c)}+plug&tag=YOURTAGHERE" target="_blank" rel="nofollow sponsored">Buy a suitable adapter on Amazon</a>
+<strong>Need a travel adapter for ${country}?</strong><br>
+<a href="https://www.amazon.com/s?k=travel+adapter+${encodeURIComponent(country)}+plug&tag=YOURTAGHERE" target="_blank" rel="nofollow sponsored">Buy a suitable adapter on Amazon</a>
 </div>`;
   const lastUpdated = `<p class='small'>Last updated: ${today}</p>`;
-  const body = `<h1>Plug & Voltage Info for ${c}</h1><p>${desc}</p>${affiliateBlock}${lastUpdated}`;
-  fs.writeFileSync(path.join(countriesDir, `${slug}.html`), htmlPage(`Travel Plug & Voltage Info for ${c}`, body, desc, `/countries/${slug}.html`));
+  const body = `<h1>Plug & Voltage Info for ${country}</h1><p>${desc}</p>${affiliateBlock}${lastUpdated}`;
+
+  const html = htmlPage(`Travel Plug & Voltage Info for ${country}`, body, desc, `/countries/${slug}.html`);
+  fs.writeFileSync(path.join(countriesDir, `${slug}.html`), html);
 });
 
 console.log(`Generated ${data.length} country pages`);
