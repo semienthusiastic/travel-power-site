@@ -1,5 +1,5 @@
 [build]
-  command = "node generate.js && SITE_URL=$DEPLOY_PRIME_URL node absolutize.js && node minify.js && SITE_URL=$DEPLOY_PRIME_URL node sitemap.js"
+  command = "node generate.js && node fix-links.js && SITE_URL=$DEPLOY_PRIME_URL node absolutize.js && node minify.js && SITE_URL=$DEPLOY_PRIME_URL node sitemap.js"
   publish = "."
 
 [build.environment]
