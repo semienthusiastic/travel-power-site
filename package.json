@@ -1,8 +1,6 @@
 {
-  "name": "travel-power-mvp",
+  "name": "travelplugguide",
   "version": "1.0.0",
   "private": true,
-  "scripts": {
-    "build": "node generate.js"
-  }
+  "scripts": { "build": "node generate.js" }
 }

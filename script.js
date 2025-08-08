@@ -9,7 +9,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const data = await loadData();
     const selects = [document.getElementById('countrySelect'), document.getElementById('toCountry')].filter(Boolean);
     selects.forEach(sel => {
-      sel.innerHTML = '<option value="">-- Select a Country --</option>' + data.map(c => `<option>${c.country}</option>`).join('');
+      if (!sel) return;
+      sel.innerHTML = '<option value=\"\">-- Select a Country --</option>' + data.map(c => `<option>${c.country}</option>`).join('');
     });
   } catch(e){ console.error('Failed to load data.json', e); }
 });
@@ -36,7 +37,7 @@ async function showCountryInfo(){
       <p><strong>Voltage:</strong> ${country.voltage}V</p>
       <p><strong>Frequency:</strong> ${country.frequency} Hz</p>
       ${country.notes ? `<p><em>${country.notes}</em></p>` : ''}
-      <p><a href="https://www.amazon.com/s?k=universal+travel+adapter+type+${country.plugTypes[0]}" target="_blank" rel="nofollow noopener">Buy Adapter on Amazon</a></p>
+      <p><a href="https://www.amazon.com/s?k=universal+travel+adapter+type+${country.plugTypes[0]}&tag=YOURTAGHERE" target="_blank" rel="nofollow noopener">Buy Adapter on Amazon</a></p>
     </div>`;
   document.getElementById('countryResult').innerHTML = html;
 }
@@ -78,8 +79,8 @@ async function checkAppliance(){
       <p>${verdict}</p>
       <ul>${details.map(d => `<li>${d}</li>`).join('')}</ul>
       <p>
-        ${adapterNeeded ? `<a href="https://www.amazon.com/s?k=universal+travel+adapter" target="_blank" rel="nofollow noopener">Buy Plug Adapter</a> &nbsp;` : ''}
-        ${(!dual && !sameV) ? `<a href="https://www.amazon.com/s?k=travel+voltage+converter" target="_blank" rel="nofollow noopener">Buy Voltage Converter</a>` : ''}
+        ${adapterNeeded ? `<a href="https://www.amazon.com/s?k=universal+travel+adapter&tag=YOURTAGHERE" target="_blank" rel="nofollow noopener">Buy Plug Adapter</a> &nbsp;` : ''}
+        ${(!dual && !sameV) ? `<a href="https://www.amazon.com/s?k=travel+voltage+converter&tag=YOURTAGHERE" target="_blank" rel="nofollow noopener">Buy Voltage Converter</a>` : ''}
       </p>
       <p><a href="plug-voltage.html">See plug & voltage for ${country.country}</a></p>
     </div>`;
