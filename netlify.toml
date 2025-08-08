@@ -1,9 +1,15 @@
 [build]
-  command = "node generate.js && node fix-links.js && SITE_URL=$DEPLOY_PRIME_URL node absolutize.js && node minify.js && SITE_URL=$DEPLOY_PRIME_URL node sitemap.js"
+  # No inline SITE_URL overrides here
+  command = "node generate.js && node fix-links.js && node absolutize.js && node minify.js && node sitemap.js"
   publish = "."
 
 [build.environment]
   NODE_VERSION = "18"
 
+# Production (live) uses your real domain
 [context.production.environment]
   SITE_URL = "https://www.travelplugguide.com"
+
+# Preview builds (optional): use the preview URL so previews are self-consistent
+[context.deploy-preview.environment]
+  SITE_URL = "$DEPLOY_PRIME_URL"
