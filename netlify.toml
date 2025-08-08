@@ -1,5 +1,9 @@
 [build]
-  command = "node generate.js"
+  command = "node generate.js && node minify.js && SITE_URL=$DEPLOY_PRIME_URL node sitemap.js"
   publish = "."
+
 [build.environment]
   NODE_VERSION = "18"
+
+[context.production.environment]
+  SITE_URL = "https://travelplugguide.com"

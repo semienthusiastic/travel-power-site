@@ -1,21 +1,76 @@
-# Travel Power MVP (Netlify-ready)
+# TravelPlugGuide — Static Site
 
-This repo contains a static site with two tools:
-- Plug & Voltage by Country
-- Will My Appliance Work Abroad? (adapter vs converter aware)
+A lightweight, SEO-friendly site that tells travellers which **plug types** and **voltage** each country uses,
+and whether a device needs an **adapter** or **converter**. Deploys on Netlify with an automated build.
 
-## Deploy on Netlify (no local steps)
+## What’s inside
+- `/index.html` — homepage
+- `/plug-voltage.html` — tool: country plug & voltage lookup
+- `/appliance-checker.html` — tool: adapter vs converter advice
+- `/countries/` — generated SEO pages for each country (created at build time)
+- `/blog/` — two starter articles
+- `/assets/` — logo + favicons
+- `data.json` — country data source
+- `generate.js` — builds country pages with meta, OG/Twitter, JSON-LD, affiliate block, last updated
+- `minify.js` — minifies HTML/CSS/JS
+- `sitemap.js` — creates `sitemap.xml` and `robots.txt`
+- `netlify.toml` — Netlify build configuration
+- `package.json` — dependencies for the minifier scripts
 
-1. Create a new GitHub repo and upload all files in this folder.
-2. In Netlify: **Add new site → Import an existing project → GitHub → select repo**.
-3. Netlify will read `netlify.toml` and run `node generate.js` automatically.
-4. Publish directory is `.` (the repo root). Generated SEO pages appear in `/countries`.
+## One‑time setup (Netlify via GitHub)
+1. Create a **GitHub repo** and upload all files in this folder.
+2. In **Netlify**: *Add new site → Import an existing project → GitHub → select repo*.
+3. Netlify will read `netlify.toml` and run the build automatically.
 
-### Local preview (optional)
-- `python -m http.server 8000` → open http://localhost:8000
-- Or `npx serve`
+### Build command (from `netlify.toml`)
+```
+node generate.js && node minify.js && SITE_URL=$DEPLOY_PRIME_URL node sitemap.js
+```
 
-### Files
-- `netlify.toml` — tells Netlify to run `node generate.js` on deploy
-- `.nvmrc` / `package.json` — pin Node to 18 (safe default)
-- `generate.js` — creates static `/countries/*.html` from `data.json`
+### (Optional) Set your custom domain URL
+In Netlify’s **production** context, `SITE_URL` is set to:
+```
+https://travelplugguide.com
+```
+You can change that in `netlify.toml` once your domain is connected.
+
+## Local preview (optional)
+You don’t need this for Netlify, but to preview locally:
+```
+# Generate country pages
+node generate.js
+
+# Start a simple server (Python)
+python -m http.server 8000
+# Visit http://localhost:8000
+```
+
+## Editing data
+- Open `data.json` and add/edit countries. Example entry:
+```json
+{ "country": "Japan", "plugTypes": ["A","B"], "voltage": 100, "frequency": "50/60Hz" }
+```
+> Note: If you see `plug_types` in some files, that’s okay — the generator expects `plug_types`. Use the included `data.json` as the source of truth.
+
+- Commit changes → Netlify rebuilds `/countries` automatically.
+
+## Amazon affiliate tag
+Search for `YOURTAGHERE` and replace it with your Amazon Associates tag (e.g., `tag=mytag-21`). You’ll find it in:
+- `script.js`
+- `/blog/*.html`
+- `generate.js` (for the country affiliate block)
+
+## Where to check after deploy
+- `https://<your-site>.netlify.app/robots.txt`
+- `https://<your-site>.netlify.app/sitemap.xml`
+- `https://<your-site>.netlify.app/countries/japan.html`
+- `https://<your-site>.netlify.app/blog/`
+
+## Troubleshooting
+- **No country pages?** Ensure Netlify is using the provided `netlify.toml`, or run `node generate.js` locally and re‑deploy.
+- **Broken tool selects?** Confirm `data.json` exists at the repo root and is valid JSON.
+- **No OG/Twitter images?** Make sure `/assets/logo-128.png` is present (it is, by default).
+
+---
+
+© 2025 TravelPlugGuide

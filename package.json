@@ -1,6 +1,12 @@
 {
   "name": "travelplugguide",
-  "version": "1.0.0",
   "private": true,
-  "scripts": { "build": "node generate.js" }
+  "scripts": {
+    "build": "node generate.js && node minify.js && SITE_URL=$DEPLOY_PRIME_URL node sitemap.js"
+  },
+  "dependencies": {
+    "clean-css": "^5.3.3",
+    "html-minifier-terser": "^7.2.0",
+    "terser": "^5.31.0"
+  }
 }
